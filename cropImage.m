@@ -1,13 +1,21 @@
-function out = cropImage(slice, rows, cols)
-    newSmallestRow = min(rows) - 30;
-    newBiggestRow = max(rows) + 30 - newSmallestRow;
-    slice(1:newSmallestRow, :, :) = []; % Chop off top newSmallestRow rows
-    slice(newBiggestRow:end, :, :) = []; % Chop off bottom newBiggestRow rows
-
-    newSmallestColumn = min(cols) - 30;
-    newBiggestColumn = max(cols) + 30 - newSmallestColumn;
-    slice(:, 1:newSmallestColumn, :) = []; % Chop off left
-    slice(:, newBiggestColumn:end, :) = []; % Chop off right
+function out = cropImage(slice, lRFP, rRFP, spindle)
+    % Crops the image around an index of rows, cols
+    
+    % Keep label on
+    slice(1:lRFP(2) - 30, :, :) = [];
+    lRFP(2) = 30;
+    rRFP(2) = 30;
+    
+    slice(:, 1:lRFP(1) - 30, :) = [];
+    lRFP(1) = 30;
+    rRFP(1) = lRFP(1) + spindle;
+    
+    slice(60:end, :, :) = [];
+    
+    slice(:, 60+spindle:end, :) = [];
+    
+%     slice = insertMarker(slice, lRFP, 'color', 'red');
+%     slice = insertMarker(slice, rRFP, 'color', 'red');
     
     out = slice;
 end

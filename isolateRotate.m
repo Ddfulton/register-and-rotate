@@ -1,4 +1,4 @@
- function out = isolateRotate(filename, fp1, fp2, zSlice, padding, rotationDegrees)
+function out = isolateRotate(filename, rfp1, rfp2, gfp1, gfp2, zSlice, padding, rotationDegrees)
 %% isolateRotate
 % Takes a file, the coordinates of two fluorescent protein dots, a z-slice.
 % Crops the image to a smaller size and places the labelled proteins on
@@ -16,13 +16,18 @@ end
 %% Fetch slice
 slice = normalizeSlice(getSlice(filename, zSlice, padding));
 
-fp1 = fp1 + padding;
-fp2 = fp2 + padding;
+if rfp1(1) < rfp2(1) % If the first RFP is further left
+    lRFP = rfp1 + padding;
+    rRFP = rfp2 + padding;
+else
+    lRFP = rfp2 + padding;
+    rRFP = rfp1 + padding;
+end
 
-%% Crop the image
+%% Crop the image based on RFP coordinates
 %
-rows = [fp1(2) fp2(2)];
-cols = [fp1(1) fp2(1)];
+rows = [rfp1(2) rfp2(2)];
+cols = [rfp1(1) rfp2(1)];
 
 slice = cropImage(slice, rows, cols);
 
@@ -36,14 +41,25 @@ else
 end
 
 % Offset the original points based on the crop
-[newfp1 newfp2] = offsetImage(fp1, fp2, rows, cols);
+[newrfp1, newrfp2] = offsetImage(rfp1, rfp2, rows, cols);
+[newgfp1, newgfp2] = offsetImage(gfp1, gfp2, rows, cols);
+disp(newrfp1);
+disp(newrfp2);
+disp(newgfp1);
+disp(newgfp2);
 
-slice = insertMarker(slice, [newfp1; newfp2], 'color', color);
+if RFP
+    slice = insertMarker(slice, [newrfp1; newrfp2], 'color', color);
+else
+    slice = insertMarker(slice, [newgfp1; newgfp2], 'color', color);
+end
 
 %% Rotate based on trigonometry to put both FPs on x-axis
-rotated = imrotate(slice, rotationDegrees);
+% Rotate it around 30, 30
+% rotated = imrotate(slice, rotationDegrees);
+rotated = rotateAround(slice, 30, 30, rotationDegrees);
 
-out = {rotated, newfp1, newfp2};
+out = {rotated, newrfp1, newrfp2};
 
 % Must crop again to ensure first RFP is in the same place each time
 

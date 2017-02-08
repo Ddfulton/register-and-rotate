@@ -12,7 +12,6 @@ imSize = [info(1).Height info(1).Width n];
 
 images = zeros(imSize);
 
-
 slice = mat2gray(imread(filename, n, 'Info', info)); 
 
 out = padarray(slice, [padding, padding]);
