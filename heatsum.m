@@ -40,13 +40,7 @@ for j = 1
         zRFP2 = rfp2(3);
         zGFP1 = gfp1(3);
         zGFP2 = gfp1(3);
-
-        zRFP1pix = (mod(zRFP1-1, 7) + 1)*300/64;
-
-        padding = 30;
-        RFP = normalizeSlice(getSlice(RFPFile, zRFP1, padding));
-        GFP = normalizeSlice(getSlice(GFPFile, zRFP1, padding)); 
-
+        
         % Decide which RFP is left
         if rfp1(1) < rfp2(1) % If the first RFP is further left
             lRFP = rfp1;
@@ -55,6 +49,14 @@ for j = 1
             lRFP = rfp2;
             rRFP = rfp1;
         end
+
+        zRFP1pix = (mod(zRFP1-1, 7) + 1)*300/64;
+
+        padding = 30;
+        RFP = normalizeSlice(getSlice(RFPFile, zRFP1, padding));
+        GFP = normalizeSlice(getSlice(GFPFile, zRFP1, padding)); 
+
+        
 
         rotation = rotationValue(lRFP, rRFP);
 
@@ -82,13 +84,13 @@ for j = 1
         RFP = padToSize(RFP, 150);
         GFP = padToSize(GFP, 150);
         
+        
         imshow(Rsum, []);
         Rsum = Rsum + RFP(:, :, 1);
         Gsum = Gsum + GFP(:, :, 1);
 
     end
 end
-
 
 imshow(Rsum, []);
 figure, imshow(Gsum, []);
